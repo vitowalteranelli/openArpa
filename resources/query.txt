@@ -18,3 +18,74 @@
 
             }
             LIMIT 100
+            
+            ##################################################
+            ## Per le query successive si presuppongono gli stessi prefissi inseriti precedentemente
+            ##################################################
+            
+            ##################################################
+	#media valori PM10 per un determinato anno (2007) per ogni centralina
+	SELECT ?sensor (avg(?value) as ?average_value)
+	WHERE {
+            ?sensor ssn:hasOutput ?obsv . 
+	?obsv ssn:observedProperty "PM10" .
+	?obsv ssn:hasValue ?val .
+            ?obsv <http://www.w3.org/2006/time#year> "2007" ^^<http://www.w3.org/2001/XMLSchema#gYear> .
+            BIND(xsd:double(REPLACE(?val, ",", ".", "i")) AS ?value)
+            filter(?value != 0)
+	} group by ?sensor order by desc(?average_value)
+            ##################################################
+
+            ##################################################
+	#media mensile valori PM10 per un determinato anno (2007) per la centralina di Statte
+	SELECT ?month (avg(?value) as ?average_value)
+	WHERE {
+            op-arpa-sensor:Statte ssn:hasOutput ?obsv . 
+            ?obsv ssn:observedProperty "PM10" .
+            ?obsv ssn:hasValue ?val .
+            ?obsv <http://www.w3.org/2006/time#month> ?month .
+            ?obsv <http://www.w3.org/2006/time#year> "2007" ^^<http://www.w3.org/2001/XMLSchema#gYear> .
+            BIND(xsd:double(REPLACE(?val, ",", ".", "i")) AS ?value)
+            filter(?value != 0)
+            } group by ?month order by asc(xsd:integer(?month))
+            ##################################################
+
+            ##################################################
+            #media annuale valori PM10 per la centralina di Statte
+            SELECT ?year (max(?value) as ?max_value) (min(?value) as ?min_value)
+            WHERE {
+            op-arpa-sensor:Statte ssn:hasOutput ?obsv . 
+            ?obsv ssn:observedProperty "PM10" .
+            ?obsv ssn:hasValue ?val .
+            ?obsv <http://www.w3.org/2006/time#year> ?year .
+            BIND(xsd:double(REPLACE(?val, ",", ".", "i")) AS ?value)
+            filter(?value != 0)
+            } group by ?year order by asc(xsd:integer(?year))
+            ##################################################
+            
+            ##################################################
+            #massimi e minimi valori PM10 annuali per la centralina di Statte
+            SELECT ?year (max(?value) as ?max_value) (min(?value) as ?min_value)
+            WHERE {
+            op-arpa-sensor:Statte ssn:hasOutput ?obsv . 
+            ?obsv ssn:observedProperty "PM10" .
+            ?obsv ssn:hasValue ?val .
+            ?obsv <http://www.w3.org/2006/time#year> ?year .
+            BIND(xsd:double(REPLACE(?val, ",", ".", "i")) AS ?value)
+            filter(?value != 0)
+            } group by ?year order by asc(xsd:integer(?year))
+            ##################################################
+            
+            ##################################################
+            #massimi e minimi valori PM10 mensili per un determinato anno (2007) per la centralina di Statte
+            SELECT ?month (max(?value) as ?max_value) (min(?value) as ?min_value)
+            WHERE {
+            op-arpa-sensor:Statte ssn:hasOutput ?obsv . 
+            ?obsv ssn:observedProperty "PM10" .
+            ?obsv ssn:hasValue ?val .
+            ?obsv <http://www.w3.org/2006/time#month> ?month .
+            ?obsv <http://www.w3.org/2006/time#year> "2007" ^^<http://www.w3.org/2001/XMLSchema#gYear> .
+            BIND(xsd:double(REPLACE(?val, ",", ".", "i")) AS ?value)
+            filter(?value != 0)
+            } group by ?month order by asc(xsd:integer(?month))
+            ##################################################
